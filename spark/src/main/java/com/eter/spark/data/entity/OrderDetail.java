@@ -1,6 +1,7 @@
 package com.eter.spark.data.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Describe additional order detail from database.
@@ -11,7 +12,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "ordersdetail")
-public class OrderDetail {
+public class OrderDetail implements Serializable {
     private Long id;
     private Product product;
 

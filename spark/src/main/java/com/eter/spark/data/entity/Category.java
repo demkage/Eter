@@ -1,6 +1,7 @@
 package com.eter.spark.data.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Describe products categories from database.
@@ -9,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "categories")
-public class Category {
+public class Category implements Serializable {
     private Long id;
     private String name;
     private String description;

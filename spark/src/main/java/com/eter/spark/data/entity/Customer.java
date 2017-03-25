@@ -1,6 +1,7 @@
 package com.eter.spark.data.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Describe customer base information from database.
@@ -10,7 +11,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "customers")
-public class Customer {
+public class Customer implements Serializable {
     private Long id;
     private String firstName;
     private String lastName;

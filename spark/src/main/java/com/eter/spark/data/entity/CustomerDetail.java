@@ -1,8 +1,9 @@
 package com.eter.spark.data.entity;
 
-import com.eter.spark.data.entity.converter.GenderConverter;
+import com.eter.spark.data.util.converter.GenderConverter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Describe customer additional details from database.
@@ -12,7 +13,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "customersdetail")
-public class CustomerDetail {
+public class CustomerDetail implements Serializable {
     private Long id;
     private Gender gender;
     private Integer age;
@@ -42,7 +43,7 @@ public class CustomerDetail {
     /**
      * Return customer gender in string format.
      * For example: "male", "female", etc.
-     * Use @see com.eter.spark.data.entity.converter.GenderConverter
+     * Use @see GenderConverter
      * to not be case sensitive.
      *
      * @return customer gender

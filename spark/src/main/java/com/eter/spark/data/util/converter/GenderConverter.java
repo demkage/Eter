@@ -1,4 +1,4 @@
-package com.eter.spark.data.entity.converter;
+package com.eter.spark.data.util.converter;
 
 import com.eter.spark.data.entity.Gender;
 
