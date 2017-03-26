@@ -1,4 +1,4 @@
-package com.eter.spark.data.dao.impl.spark.util;
+package com.eter.spark.data.util.dao;
 
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Row;
