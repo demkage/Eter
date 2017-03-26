@@ -1,13 +1,12 @@
 package com.eter.spark.data.util.transform.reflect;
 
 
-import org.apache.spark.sql.api.java.DataType;
-import org.apache.spark.sql.api.java.StructField;
-import org.apache.spark.sql.api.java.StructType;
+import org.apache.spark.sql.types.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Transform entity all supported typed fields to {@link StructType} (spark-sql schema).
@@ -45,16 +44,16 @@ public class EntityReflection {
             if (dataType == null) {
                 if (isUserCustomType(field)) {
                     fieldName += "Id";
-                    dataType = DataType.IntegerType;
+                    dataType = DataTypes.IntegerType;
                 }
             }
 
             if (dataType != null) {
-                structFields.add(StructType.createStructField(fieldName, dataType, true));
+                structFields.add(new StructField(fieldName, dataType, true, Metadata.empty()));
             }
         }
 
-        return DataType.createStructType(structFields);
+        return DataTypes.createStructType(structFields);
     }
 
     /**
@@ -67,20 +66,23 @@ public class EntityReflection {
 
     private static DataType getFieldType(Field field) {
         Class fieldType = field.getType();
-        if (fieldType.isAssignableFrom(Long.class))
-            return DataType.IntegerType;
-        else if (fieldType.isAssignableFrom(Double.class))
-            return DataType.DoubleType;
-        else if (fieldType.isAssignableFrom(Boolean.class))
-            return DataType.BooleanType;
-        else if (fieldType.isAssignableFrom(String.class))
-            return DataType.StringType;
-        else if (fieldType.isAssignableFrom(Integer.class))
-            return DataType.IntegerType;
-        else if (fieldType.isEnum())
-            return DataType.StringType;
+        Optional<SparkReversibleType> reversibleType = Optional.ofNullable(SparkReversibleType.reverseFromJavaType(fieldType));
+        return reversibleType.orElseGet(() -> SparkReversibleType.INTEGER).getSparkType();
+//        if (fieldType.isAssignableFrom(Long.class))
+//            return DataTypes.LongType;
+//        else if (fieldType.isAssignableFrom(Double.class))
+//            return DataTypes.DoubleType;
+//        else if (fieldType.isAssignableFrom(Float.class))
+//            return DataTypes.FloatType;
+//        else if (fieldType.isAssignableFrom(Boolean.class))
+//            return DataTypes.BooleanType;
+//        else if (fieldType.isAssignableFrom(String.class))
+//            return DataTypes.StringType;
+//        else if (fieldType.isAssignableFrom(Integer.class))
+//            return DataTypes.IntegerType;
+//        else if (fieldType.isEnum())
+//            return DataTypes.StringType;
 
-        return null;
     }
 
     /**
