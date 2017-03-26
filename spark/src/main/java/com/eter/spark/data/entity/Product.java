@@ -1,7 +1,10 @@
 package com.eter.spark.data.entity;
 
+
+import scala.Serializable;
+
 import javax.persistence.*;
-import java.io.Serializable;
+
 
 /**
  * Describe product information from database.
@@ -12,6 +15,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "products")
 public class Product implements Serializable {
+
     private Long id;
     private String name;
     private String description;

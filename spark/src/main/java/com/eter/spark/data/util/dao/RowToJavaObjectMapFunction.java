@@ -6,7 +6,7 @@ import org.apache.spark.sql.Row;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Used for transform a {@link Row} in {@link Dataset} to user define type.
+ * Used for transform a {@link Row} in {@link org.apache.spark.sql.Dataset} to user define type.
  */
 public class RowToJavaObjectMapFunction<U> implements MapFunction<Row, U> {
     private static final long serialVersionUID = -3959017028910340287L;

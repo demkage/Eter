@@ -1,11 +1,9 @@
 package com.eter.spark.data.entity;
 
-import java.io.Serializable;
-
 /**
  * Enum value for gender types.
  */
-public enum Gender implements Serializable {
+public enum Gender {
     MALE("male"),
     FEMALE("female"),
     UNKNOWN("unknown");
@@ -41,5 +39,13 @@ public enum Gender implements Serializable {
      */
     public String valueName() {
         return value;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Gender{" +
+                "value='" + value + '\'' +
+                '}';
     }
 }

@@ -1,9 +1,9 @@
 package com.eter.spark.data.dao.impl.spark;
 
 import com.eter.spark.data.dao.DatabaseDAO;
-import com.eter.spark.data.dao.impl.spark.util.RowToJavaObjectMapFunction;
 import com.eter.spark.data.database.Connection;
 import com.eter.spark.data.database.impl.spark.SparkSQLConnection;
+import com.eter.spark.data.util.dao.RowToJavaObjectMapFunction;
 import org.apache.spark.sql.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -161,6 +161,27 @@ public class SparkSQLDAO implements DatabaseDAO {
             return objects.collectAsList();
         }
         return null;
+    }
+
+    public <T> Dataset<Row> getAllAsDataset(Class<T> type) {
+        SparkSession session = sparkConnection.getSparkSession();
+        Dataset<Row> rows = null;
+        if (session != null) {
+            Encoder<T> objectEncoder = Encoders.bean(type);
+            String tableName = type.getName().toLowerCase();
+
+            if (type.isAnnotationPresent(Table.class)) {
+                tableName = type.getAnnotation(Table.class).name();
+            }
+
+            rows = session.read()
+                    .format("jdbc")
+                    .option("dbtable", tableName)
+                    .options(sparkConnection.getProperties().getAsMap())
+                    .load();
+        }
+
+        return rows;
     }
 
     /**

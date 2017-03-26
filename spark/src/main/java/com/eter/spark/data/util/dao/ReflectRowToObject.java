@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 /**
- * Transform and instantiate a entity object from {@link Dataset} {@link Row} object.
+ * Transform and instantiate an entity object from {@link org.apache.spark.sql.Dataset} {@link Row} object.
  */
 public class ReflectRowToObject {
 
@@ -19,6 +19,7 @@ public class ReflectRowToObject {
      *
      * @param row  Row value to reflect
      * @param type object instance type
+     * @param <T> object type
      * @return instance of object
      * @throws InstantiationException    when can't create instance of object
      * @throws NoSuchMethodException     when can't find setter method
@@ -33,7 +34,7 @@ public class ReflectRowToObject {
                 //todo: relation resolver
             }
 
-            Optional<Method> setter = Optional.ofNullable(getSetterMethod(columnName, type));
+            Optional<Method> setter = Optional.ofNullable(MethodSolver.getSetterMethod(columnName, type));
             setter.ifPresent((method) -> {
                 try {
                     method.invoke(object, row.get(row.fieldIndex(field.name())));
@@ -57,21 +58,4 @@ public class ReflectRowToObject {
     }
 
 
-    /**
-     * Find setter method based on column name.
-     *
-     * @param columnName name of column
-     * @param type       java type what contain setter method
-     * @param <T>        object type
-     * @return return setter method
-     */
-    public static <T> Method getSetterMethod(String columnName, Class<T> type) {
-        for (Method method : type.getDeclaredMethods()) {
-            if (method.getName().contains("set")) {
-                if (method.getName().toLowerCase().contains(columnName.toLowerCase()))
-                    return method;
-            }
-        }
-        return null;
-    }
 }
