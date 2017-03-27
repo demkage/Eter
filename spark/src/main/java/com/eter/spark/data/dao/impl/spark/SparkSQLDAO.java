@@ -5,6 +5,7 @@ import com.eter.spark.data.database.Connection;
 import com.eter.spark.data.database.impl.spark.SparkSQLConnection;
 import com.eter.spark.data.util.dao.RowToJavaObjectMapFunction;
 import org.apache.spark.sql.*;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.Table;
@@ -57,11 +58,13 @@ public class SparkSQLDAO implements DatabaseDAO {
             Encoder<T> objectEncoder = Encoders.bean((Class<T>) o.getClass());
             List<T> object = new ArrayList<T>();
             object.add(o);
-            System.out.println("PRINY");
+
             objectEncoder.schema().printTreeString();
+
             DataFrameWriter writer = session.createDataset(object, objectEncoder)
                     .write()
                     .format("jdbc").options(sparkConnection.getProperties().getAsMap());
+
             transactions.add(writer);
 
         }
@@ -189,7 +192,9 @@ public class SparkSQLDAO implements DatabaseDAO {
      */
     @Override
     public void commit() {
-
+        Iterator<DataFrameWriter> it = transactions.iterator();
+        while(it.hasNext())
+            it.next().save();
     }
 
     /**
@@ -197,6 +202,6 @@ public class SparkSQLDAO implements DatabaseDAO {
      */
     @Override
     public void rollback() {
-
+        transactions.clear();
     }
 }
