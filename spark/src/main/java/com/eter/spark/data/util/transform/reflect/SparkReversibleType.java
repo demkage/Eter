@@ -13,7 +13,8 @@ public enum SparkReversibleType {
     FLOAT(Float.class, DataTypes.FloatType),
     LONG(Long.class, DataTypes.LongType),
     SHORT(Short.class, DataTypes.ShortType),
-    BOOLEAN(Boolean.class, DataTypes.BooleanType);
+    BOOLEAN(Boolean.class, DataTypes.BooleanType),
+    ENUM(Enum.class, DataTypes.StringType);
 
     private Class javaType;
     private DataType sparkType;
