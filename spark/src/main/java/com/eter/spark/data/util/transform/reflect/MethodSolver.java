@@ -1,4 +1,4 @@
-package com.eter.spark.data.util.dao;
+package com.eter.spark.data.util.transform.reflect;
 
 import javax.persistence.JoinColumn;
 import java.lang.reflect.Method;
@@ -45,7 +45,9 @@ public class MethodSolver<T> {
      */
     public static <T> Method getMethodWhatStartsWith(String startsWith, String columnName, Class<T> type) {
         for (Method method : type.getDeclaredMethods()) {
+
             if (method.getName().startsWith(startsWith)) {
+
                 if (method.getName().toLowerCase().contains(columnName.toLowerCase()))
                     return method;
             }
@@ -53,9 +55,18 @@ public class MethodSolver<T> {
         return null;
     }
 
+    /**
+     * Return method what has annotation corresponding to a relation ({@link JoinColumn}).
+     *
+     * @param type {@link Class} object type
+     * @param <T>  generic object type
+     * @return List with {@link Method} what have {@link JoinColumn} annotation.
+     */
     public static <T> List<Method> getRelationMethods(Class<T> type) {
         List<Method> methods = new ArrayList<>();
+
         for (Method method : type.getDeclaredMethods()) {
+
             if (method.isAnnotationPresent(JoinColumn.class)) {
                 methods.add(method);
             }

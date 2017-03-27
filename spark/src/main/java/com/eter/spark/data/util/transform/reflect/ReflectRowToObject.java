@@ -1,5 +1,6 @@
-package com.eter.spark.data.util.dao;
+package com.eter.spark.data.util.transform.reflect;
 
+import com.eter.spark.data.util.transform.reflect.MethodSolver;
 import com.eter.spark.data.util.transform.reflect.SparkReversibleType;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.types.StructField;
@@ -19,7 +20,7 @@ public class ReflectRowToObject {
      *
      * @param row  Row value to reflect
      * @param type object instance type
-     * @param <T> object type
+     * @param <T>  object type
      * @return instance of object
      * @throws InstantiationException    when can't create instance of object
      * @throws NoSuchMethodException     when can't find setter method
@@ -30,11 +31,13 @@ public class ReflectRowToObject {
         T object = type.newInstance();
         for (StructField field : row.schema().fields()) {
             String columnName = field.name();
+
             if (!columnName.equals("id") && columnName.contains("id")) {
-                //todo: relation resolver
+                continue;
             }
 
             Optional<Method> setter = Optional.ofNullable(MethodSolver.getSetterMethod(columnName, type));
+
             setter.ifPresent((method) -> {
                 try {
                     method.invoke(object, row.get(row.fieldIndex(field.name())));
@@ -42,6 +45,7 @@ public class ReflectRowToObject {
 
                 }
             });
+
         }
 
         return object;

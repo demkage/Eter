@@ -67,22 +67,8 @@ public class EntityReflection {
     private static DataType getFieldType(Field field) {
         Class fieldType = field.getType();
         Optional<SparkReversibleType> reversibleType = Optional.ofNullable(SparkReversibleType.reverseFromJavaType(fieldType));
-        return reversibleType.orElseGet(() -> SparkReversibleType.INTEGER).getSparkType();
-//        if (fieldType.isAssignableFrom(Long.class))
-//            return DataTypes.LongType;
-//        else if (fieldType.isAssignableFrom(Double.class))
-//            return DataTypes.DoubleType;
-//        else if (fieldType.isAssignableFrom(Float.class))
-//            return DataTypes.FloatType;
-//        else if (fieldType.isAssignableFrom(Boolean.class))
-//            return DataTypes.BooleanType;
-//        else if (fieldType.isAssignableFrom(String.class))
-//            return DataTypes.StringType;
-//        else if (fieldType.isAssignableFrom(Integer.class))
-//            return DataTypes.IntegerType;
-//        else if (fieldType.isEnum())
-//            return DataTypes.StringType;
 
+        return reversibleType.orElseGet(() -> SparkReversibleType.INTEGER).getSparkType();
     }
 
     /**
