@@ -4,7 +4,7 @@ import com.eter.spark.data.database.DatabaseProperties;
 import com.eter.spark.data.database.impl.spark.SparkSQLConnection;
 import com.eter.spark.data.database.impl.spark.SparkSQLProperties;
 import com.eter.spark.data.entity.Product;
-import com.eter.spark.data.util.dao.MethodSolver;
+import com.eter.spark.data.util.transform.reflect.MethodSolver;
 import com.eter.spark.data.util.dao.SparkSQLRelationResolver;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -43,18 +43,12 @@ public class SparkSQLDAOTest {
     @Test
     public void getAll() throws Exception {
         Dataset<Row> products = dao.getAllAsDataset(Product.class);
-        //Dataset<Row> categories =dao.getAllAsDataset(Category.class);
 
-        SparkSQLRelationResolver resolver = new SparkSQLRelationResolver();
-        products = resolver.joinRelations(dao, products, Product.class, MethodSolver.getRelationMethods(Product.class));
-        resolver.resolveRelation(products, Product.class)
+        SparkSQLRelationResolver.resolveOneToOne(dao, products, Product.class)
                 .foreach((objectProduct) -> {
-                    Product product = (Product) objectProduct;
-                    System.out.println("Product: " + product.getName() + " " + product.getCategory().getName());
+                    assert(objectProduct.getCategory() == null);
                 });
-//        for(Product product : doneProducts) {
-//
-//        }
+
     }
 
 }
