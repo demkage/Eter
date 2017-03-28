@@ -3,6 +3,7 @@ package com.eter.spark.data.dao.impl.spark;
 import com.eter.spark.data.database.DatabaseProperties;
 import com.eter.spark.data.database.impl.spark.SparkSQLConnection;
 import com.eter.spark.data.database.impl.spark.SparkSQLProperties;
+import com.eter.spark.data.entity.Customer;
 import com.eter.spark.data.entity.Product;
 import com.eter.spark.data.util.transform.reflect.MethodSolver;
 import com.eter.spark.data.util.dao.SparkSQLRelationResolver;
@@ -21,10 +22,27 @@ public class SparkSQLDAOTest {
 
     @Before
     public void setUp() throws Exception {
+//        connection = new SparkSQLConnection();
+//        DatabaseProperties properties = new SparkSQLProperties();
+//        properties.put("url", "jdbc:postgresql://localhost:5432/testdata");
+//        properties.put("user", "rusifer");
+//        properties.put("password", "");
+//        properties.put("warehouse-dir", "spark-warehouse");
+//        properties.put("appName", "TEST");
+//        properties.put("master", "local");
+//        connection.applyProperties(properties);
+//        connection.connect();
+//        dao = new SparkSQLDAO();
+//        dao.setDatabaseConnection(connection);
+    }
+
+    @Before
+    public void setupSQLServer() throws Exception {
+
         connection = new SparkSQLConnection();
         DatabaseProperties properties = new SparkSQLProperties();
-        properties.put("url", "jdbc:postgresql://localhost:5432/testdata");
-        properties.put("user", "rusifer");
+        properties.put("url", "jdbc:sqlserver://localhost:1433;databaseName=NC_testdata");
+        properties.put("user", "onlyforreading");
         properties.put("password", "");
         properties.put("warehouse-dir", "spark-warehouse");
         properties.put("appName", "TEST");
@@ -46,7 +64,7 @@ public class SparkSQLDAOTest {
 
         SparkSQLRelationResolver.resolveOneToOne(dao, products, Product.class)
                 .foreach((objectProduct) -> {
-                    assert(objectProduct.getCategory() == null);
+                    assert(objectProduct.getCategory() != null);
                 });
 
     }
