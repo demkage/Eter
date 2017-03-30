@@ -16,4 +16,16 @@ public interface DatasetBasedDAO {
      * @return {@link Dataset} with selected data from database
      */
     public <T> Dataset<Row> getAllAsDataset(Class<T> type);
+
+
+    /**
+     * Return data from database, in dependence of indicated {@link Class}, as {@link Dataset}
+     * and join with other tables, in dependence of relations (if entity has relations, else
+     * it should work like {@link DatasetBasedDAO#getAllAsDataset}).
+     *
+     * @param type {@link Class} of entity to query
+     * @param <T>  generic type of entity to query
+     * @return {@link} Dataset) with selected data from database
+     */
+    public <T> Dataset<Row> getAndJoinAsDataset(Class<T> type);
 }

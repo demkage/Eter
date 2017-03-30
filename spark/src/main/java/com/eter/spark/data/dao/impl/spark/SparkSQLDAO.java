@@ -6,6 +6,7 @@ import com.eter.spark.data.database.Connection;
 import com.eter.spark.data.database.impl.spark.SparkSQLConnection;
 import com.eter.spark.data.util.dao.RowToJavaObjectMapFunction;
 import com.eter.spark.data.util.dao.SparkSQLRelationResolver;
+import com.eter.spark.data.util.transform.reflect.MethodSolver;
 import org.apache.spark.sql.*;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -23,6 +24,7 @@ public class SparkSQLDAO implements DatabaseDAO, DatasetBasedDAO {
     private SparkSQLConnection sparkConnection;
     private List<DataFrameWriter> transactions;
     private SparkSQLRelationResolver relationResolver;
+
     /**
      * Return database connection.
      *
@@ -192,6 +194,25 @@ public class SparkSQLDAO implements DatabaseDAO, DatasetBasedDAO {
                     .option("dbtable", tableName)
                     .options(sparkConnection.getProperties().getAsMap())
                     .load();
+        }
+
+        return rows;
+    }
+
+    /**
+     * Return data from database, in dependence of indicated {@link Class}, as {@link Dataset}
+     * and join with other tables, in dependence of relation (if entity has relations).
+     *
+     * @param type {@link Class} of entity to query
+     * @param <T>  generic type of entity to query
+     * @return {@link} Dataset) with selected data from database
+     */
+    @Override
+    public <T> Dataset<Row> getAndJoinAsDataset(Class<T> type) {
+        Dataset<Row> rows = getAllAsDataset(type);
+
+        if (rows != null) {
+            rows = SparkSQLRelationResolver.joinRelations(this, rows, MethodSolver.getRelationMethods(type));
         }
 
         return rows;
