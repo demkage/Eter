@@ -1,9 +1,11 @@
 package com.eter.spark.data.dao.impl.spark;
 
 import com.eter.spark.data.dao.DatabaseDAO;
+import com.eter.spark.data.dao.DatasetBasedDAO;
 import com.eter.spark.data.database.Connection;
 import com.eter.spark.data.database.impl.spark.SparkSQLConnection;
 import com.eter.spark.data.util.dao.RowToJavaObjectMapFunction;
+import com.eter.spark.data.util.dao.SparkSQLRelationResolver;
 import org.apache.spark.sql.*;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -17,10 +19,10 @@ import java.util.List;
 /**
  * Created by rusifer on 3/26/17.
  */
-public class SparkSQLDAO implements DatabaseDAO {
+public class SparkSQLDAO implements DatabaseDAO, DatasetBasedDAO {
     private SparkSQLConnection sparkConnection;
     private List<DataFrameWriter> transactions;
-
+    private SparkSQLRelationResolver relationResolver;
     /**
      * Return database connection.
      *
@@ -160,12 +162,20 @@ public class SparkSQLDAO implements DatabaseDAO {
                     .option("dbtable", tableName)
                     .options(sparkConnection.getProperties().getAsMap())
                     .load();
-            Dataset<T> objects = rows.map(new RowToJavaObjectMapFunction<T>(type), objectEncoder);
+            Dataset<T> objects = SparkSQLRelationResolver.resolveOneToOne(this, rows, type);
             return objects.collectAsList();
         }
         return null;
     }
 
+    /**
+     * Return data from database, in dependence of indicated {@link Class}, as {@link Dataset}.
+     *
+     * @param type {@link Class} of data to return
+     * @param <T>  generic type of data to return
+     * @return {@link Dataset} with selected data from database
+     */
+    @Override
     public <T> Dataset<Row> getAllAsDataset(Class<T> type) {
         SparkSession session = sparkConnection.getSparkSession();
         Dataset<Row> rows = null;
@@ -193,7 +203,7 @@ public class SparkSQLDAO implements DatabaseDAO {
     @Override
     public void commit() {
         Iterator<DataFrameWriter> it = transactions.iterator();
-        while(it.hasNext())
+        while (it.hasNext())
             it.next().save();
     }
 
