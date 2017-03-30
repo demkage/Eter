@@ -38,18 +38,15 @@ public class EntityReflection {
         List<StructField> structFields = new ArrayList<StructField>();
 
         for (Field field : fields) {
-            DataType dataType = getFieldType(field);
+            SparkReversibleType dataType = getFieldType(field);
             String fieldName = field.getName();
 
-            if (dataType == null) {
-                if (isUserCustomType(field)) {
-                    fieldName += "Id";
-                    dataType = DataTypes.IntegerType;
-                }
+            if (dataType == SparkReversibleType.REFERENCETYPE) {
+                    fieldName += "id";
             }
 
-            if (dataType != null) {
-                structFields.add(new StructField(fieldName, dataType, true, Metadata.empty()));
+            if (dataType != SparkReversibleType.UNKNOWN) {
+                structFields.add(new StructField(fieldName, dataType.getSparkType(), true, Metadata.empty()));
             }
         }
 
@@ -64,21 +61,11 @@ public class EntityReflection {
      * @return {@link DataType} what represent type of {@link Field}
      */
 
-    private static DataType getFieldType(Field field) {
+    private static SparkReversibleType getFieldType(Field field) {
         Class fieldType = field.getType();
         Optional<SparkReversibleType> reversibleType = Optional.ofNullable(SparkReversibleType.reverseFromJavaType(fieldType));
 
-        return reversibleType.orElseGet(() -> SparkReversibleType.INTEGER).getSparkType();
+        return reversibleType.orElseGet(() -> SparkReversibleType.UNKNOWN);
     }
 
-    /**
-     * Check if field type is user custom type.
-     *
-     * @param field - field to check
-     * @return true if field type is user custom type, or false if is not
-     */
-    private static boolean isUserCustomType(Field field) {
-        return !field.getType().isPrimitive() && !field.getType().getName().startsWith("java.lang");
-
-    }
 }

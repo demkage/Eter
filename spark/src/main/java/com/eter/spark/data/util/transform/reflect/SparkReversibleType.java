@@ -1,7 +1,10 @@
 package com.eter.spark.data.util.transform.reflect;
 
+import com.eter.spark.data.util.dao.RowToJavaObjectMapFunction;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
+
+import javax.persistence.JoinColumn;
 
 /**
  * Used for identify java/spark type and convert to his alternatives to spark/java.
@@ -14,7 +17,9 @@ public enum SparkReversibleType {
     LONG(Long.class, DataTypes.LongType),
     SHORT(Short.class, DataTypes.ShortType),
     BOOLEAN(Boolean.class, DataTypes.BooleanType),
-    ENUM(Enum.class, DataTypes.StringType);
+    ENUM(Enum.class, DataTypes.StringType),
+    REFERENCETYPE(Object.class, DataTypes.LongType),
+    UNKNOWN(null, null);
 
     private Class javaType;
     private DataType sparkType;
@@ -53,8 +58,10 @@ public enum SparkReversibleType {
      * @return {@link SparkReversibleType} what correspond to input {@link Class}
      */
     public static SparkReversibleType reverseFromJavaType(Class type) {
-        for (SparkReversibleType reversibleType : SparkReversibleType.values()) {
+        if(!type.isPrimitive() && !type.getName().startsWith("java.lang"))
+            return SparkReversibleType.REFERENCETYPE;
 
+        for (SparkReversibleType reversibleType : SparkReversibleType.values()) {
             if (type.isAssignableFrom(reversibleType.javaType))
                 return reversibleType;
         }
