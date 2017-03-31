@@ -30,6 +30,8 @@ public class JoinRowToJavaObjectMapFunction<T> implements MapFunction<Row, T> {
 
     /**
      * Is called from {@link org.apache.spark.sql.Dataset#map} function.
+     * TODO: Problem with hierhic relationship. Check row name, and getter/setter name.
+     * TODO: example Field "customercustomerdetail" does not exist.
      *
      * @param value Row value to transform
      * @return result java object

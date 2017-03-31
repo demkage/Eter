@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Created by rusifer on 3/26/17.
+ * Useful methods for resolve sql relations such as one-to-one.
  */
 public class SparkSQLRelationResolver implements Serializable {
     private static final long serialVersionUID = -6055546003055747971L;
