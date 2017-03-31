@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Table(name = "customersdetail")
 public class CustomerDetail implements Serializable {
     private Long id;
-    private Gender gender;
+    private String gender;
     private Integer age;
 
     /**
@@ -48,10 +48,10 @@ public class CustomerDetail implements Serializable {
      *
      * @return customer gender
      */
-    @Convert(converter = GenderConverter.class)
+    //@Convert(converter = GenderConverter.class)
     @Column(name = "gender")
-    @Enumerated(EnumType.STRING)
-    public Gender getGender() {
+    //@Enumerated(EnumType.STRING)
+    public String getGender() {
         return gender;
     }
 
@@ -61,7 +61,7 @@ public class CustomerDetail implements Serializable {
      *
      * @param gender customer gender
      */
-    public void setGender(Gender gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 

@@ -224,7 +224,7 @@ public class Customer implements Serializable {
                 ", address='" + address + '\'' +
                 ", city='" + city + '\'' +
                 ", postalCode='" + postalCode + '\'' +
-                //", customerDetail=" + customerDetail +
+                ", customerDetail=" + customerDetail +
                 '}';
     }
 }
