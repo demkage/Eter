@@ -86,4 +86,34 @@ public class Order implements Serializable {
     public void setOrderDetail(OrderDetail orderDetail) {
         this.orderDetail = orderDetail;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Order order = (Order) o;
+
+        if (getId() != null ? !getId().equals(order.getId()) : order.getId() != null) return false;
+        if (getCustomer() != null ? !getCustomer().equals(order.getCustomer()) : order.getCustomer() != null)
+            return false;
+        return getOrderDetail() != null ? getOrderDetail().equals(order.getOrderDetail()) : order.getOrderDetail() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getCustomer() != null ? getCustomer().hashCode() : 0);
+        result = 31 * result + (getOrderDetail() != null ? getOrderDetail().hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", customer=" + customer +
+                ", orderDetail=" + orderDetail +
+                '}';
+    }
 }
