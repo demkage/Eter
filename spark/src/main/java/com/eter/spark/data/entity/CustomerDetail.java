@@ -1,7 +1,5 @@
 package com.eter.spark.data.entity;
 
-import com.eter.spark.data.util.converter.GenderConverter;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -15,7 +13,7 @@ import java.io.Serializable;
 @Table(name = "customersdetail")
 public class CustomerDetail implements Serializable {
     private Long id;
-    private String gender;
+    private String sex;
     private Integer age;
 
     /**
@@ -41,28 +39,28 @@ public class CustomerDetail implements Serializable {
     }
 
     /**
-     * Return customer gender in string format.
+     * Return customer sex in string format.
      * For example: "male", "female", etc.
      * Use @see GenderConverter
      * to not be case sensitive.
      *
-     * @return customer gender
+     * @return customer sex
      */
     //@Convert(converter = GenderConverter.class)
-    @Column(name = "gender")
+    @Column(name = "sex")
     //@Enumerated(EnumType.STRING)
-    public String getGender() {
-        return gender;
+    public String getSex() {
+        return sex;
     }
 
     /**
-     * Set customer gender in string format.
+     * Set customer sex in string format.
      * For example: "male", "female", etc.
      *
-     * @param gender customer gender
+     * @param sex customer sex
      */
-    public void setGender(String gender) {
-        this.gender = gender;
+    public void setSex(String sex) {
+        this.sex = sex;
     }
 
     /**
@@ -92,14 +90,14 @@ public class CustomerDetail implements Serializable {
         CustomerDetail that = (CustomerDetail) o;
 
         if (getId() != null ? !getId().equals(that.getId()) : that.getId() != null) return false;
-        if (getGender() != that.getGender()) return false;
+        if (getSex() != that.getSex()) return false;
         return getAge() != null ? getAge().equals(that.getAge()) : that.getAge() == null;
     }
 
     @Override
     public int hashCode() {
         int result = getId() != null ? getId().hashCode() : 0;
-        result = 31 * result + (getGender() != null ? getGender().hashCode() : 0);
+        result = 31 * result + (getSex() != null ? getSex().hashCode() : 0);
         result = 31 * result + (getAge() != null ? getAge().hashCode() : 0);
         return result;
     }
@@ -108,7 +106,7 @@ public class CustomerDetail implements Serializable {
     public String toString() {
         return "CustomerDetail{" +
                 "id=" + id +
-                ", gender=" + gender +
+                ", sex=" + sex +
                 ", age=" + age +
                 '}';
     }
