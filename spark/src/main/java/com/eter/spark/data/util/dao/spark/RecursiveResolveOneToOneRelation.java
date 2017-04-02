@@ -9,6 +9,7 @@ import org.apache.spark.sql.Row;
 
 import javax.persistence.JoinColumn;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -17,11 +18,16 @@ import java.util.Iterator;
  */
 public class RecursiveResolveOneToOneRelation {
     private SparkSQLDAO sparkSQLDAO;
+    private JoinStrategy joinStrategy;
+
 
     /**
      * Default constructor
+     *
+     * @param joinStrategy {@link JoinStrategy} to use for join.
      */
-    public RecursiveResolveOneToOneRelation() {
+    public RecursiveResolveOneToOneRelation(JoinStrategy joinStrategy) {
+        this.joinStrategy = joinStrategy;
     }
 
     /**
@@ -30,7 +36,8 @@ public class RecursiveResolveOneToOneRelation {
      * @param sparkSQLDAO DAO instance
      * @see SparkSQLDAO
      */
-    public RecursiveResolveOneToOneRelation(SparkSQLDAO sparkSQLDAO) {
+    public RecursiveResolveOneToOneRelation(JoinStrategy joinStrategy, SparkSQLDAO sparkSQLDAO) {
+        this.joinStrategy = joinStrategy;
         this.sparkSQLDAO = sparkSQLDAO;
     }
 
@@ -62,23 +69,27 @@ public class RecursiveResolveOneToOneRelation {
     public <T> Dataset<Row> resolveJoins(Class<T> type) {
         Collection<Method> relationalMethods = MethodSolver.getRelationMethods(type);
         Dataset<Row> currentRows = null;
+        JoinSelector selector = joinStrategy.getJoinSelector(type);
 
         if (relationalMethods.size() != 0) {
-            currentRows = sparkSQLDAO.getAllAsDataset(type);
+            currentRows = applySelector(selector, type, sparkSQLDAO.getAllAsDataset(type));
             Iterator<Method> iterator = relationalMethods.iterator();
 
             while (iterator.hasNext()) {
                 Method method = iterator.next();
-                currentRows = solveJoinIteration(method, currentRows);
+
+                if (selector.getColumns(method.getReturnType()) != null)
+                    currentRows = solveJoinIteration(method, currentRows);
             }
 
         } else {
-            return sparkSQLDAO.getAllAsDataset(type);
+            return applySelector(selector, type, sparkSQLDAO.getAllAsDataset(type));
         }
 
         return currentRows;
 
     }
+
 
     /**
      * Resolve one-to-one relation.
@@ -106,10 +117,23 @@ public class RecursiveResolveOneToOneRelation {
         Class referencedType = method.getReturnType();
         JoinColumn joinColumn = method.getDeclaredAnnotation(JoinColumn.class);
 
+
         rowDataset = JoinDatasetUtil.joinDatasets(rowDataset, resolveJoins(referencedType),
                 joinColumn.name(), joinColumn.referencedColumnName(),
                 referencedType.getSimpleName().toLowerCase());
 
         return rowDataset;
+    }
+
+    private Dataset<Row> applySelector(JoinSelector selector, Class type, Dataset<Row> dataset) {
+        Collection<String> selectCollection = selector.getColumns(type);
+
+        if (selectCollection == null) {
+            return null;
+        }
+
+        String[] selectColumns = selectCollection.toArray(new String[selectCollection.size()]);
+
+        return dataset.select(selectColumns[0], Arrays.copyOfRange(selectColumns, 1, selectColumns.length));
     }
 }

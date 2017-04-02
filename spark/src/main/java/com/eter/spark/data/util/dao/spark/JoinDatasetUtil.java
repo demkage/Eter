@@ -30,6 +30,7 @@ public class JoinDatasetUtil {
         }
 
         return firstDataset.join(secondDatasetRenamed, firstDataset.col(joinColumn)
-                .equalTo(secondDatasetRenamed.col(alias + referenceColumn)));
+                .equalTo(secondDatasetRenamed.col(alias + referenceColumn)))
+                .drop(secondDatasetRenamed.col(alias + referenceColumn));
     }
 }
